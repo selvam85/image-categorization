@@ -1,56 +1,77 @@
-(function (global) {
-    var imagesPerRow = 3,
-        chooseFiles,
-        columns,
-        previews;
+import '@tensorflow/tfjs';
+import * as mobilenet from "@tensorflow-models/mobilenet";
 
-    function windowLoadHandler() {
-        global.removeEventListener("load", windowLoadHandler);
-        chooseFiles = document.getElementById("chooseFiles");
-        columns = document.getElementById("columns");
-        previews = document.getElementById("previews");
+const chooseFiles = document.getElementById("chooseFiles");
+const columnHeaders = document.getElementById("columnHeaders");
+const tableBody = document.getElementById("tableBody");
+const classifyImagesButton = document.getElementById("classifyImages");
+const imagesPerRow = 3;
 
-        var row = columns.insertRow(),
-            header,
-            i;
+var model;
+mobilenet.load().then(mobileNetModel => {
+    model = mobileNetModel;
+});
 
-        for (i = 0; i < imagesPerRow; i += 1) {
-            header = row.insertCell();
-            header.style.width = (100 / imagesPerRow) + "%";
+function main() {
+    let header;
+    let row = columnHeaders.insertRow();
+    
+    for(let i = 0; i < imagesPerRow; i++) {
+        header = row.insertCell();
+        header.style.width = (100 / imagesPerRow) + "%";
+    }
+}
+
+chooseFiles.onchange = () => {
+    clearAllRows();
+    displayImages();
+}
+
+function displayImages() {
+    
+    let row;
+
+    Array.prototype.forEach.call(chooseFiles.files, function(file, index) {
+        let cell;    
+        let image;
+        
+        //Create a new row for every column index value "0" as it is the first element in the new row.    
+        let columnIndex = index % imagesPerRow;
+        if (columnIndex === 0) {
+            row = tableBody.insertRow(Math.ceil(index / imagesPerRow));
         }
 
-        chooseFiles.addEventListener("change", PreviewImages, false);
-    }    
-    
-    function PreviewImages() {
-        var row;
+        image = document.createElement("img");
+        image.id = "img_" + index;
+        image.style.width = "100%";
+        image.style.height = "auto";
+        cell = row.insertCell(columnIndex);
+        cell.appendChild(image);
 
-        Array.prototype.forEach.call(chooseFiles.files, function (file, index) {
-            var cindex = index % imagesPerRow,
-                oFReader = new FileReader(),
-                cell,
-                image;
+        image.src = URL.createObjectURL(file);
+    });
 
-            if (cindex === 0) {
-                row = previews.insertRow(Math.ceil(index / imagesPerRow));
-            }
+    classifyImagesButton.disabled = false;
+}
 
-            image = document.createElement("img");
-            image.id = "img_" + index;
-            image.style.width = "100%";
-            image.style.height = "auto";
-            cell = row.insertCell(cindex);
-            cell.appendChild(image);
-
-            oFReader.addEventListener("load", function (evt) {
-                console.log("loaded");
-                image.src = evt.target.result;
-                this.removeEventListener("load");
-            }, false);
-
-            oFReader.readAsDataURL(file);
-        });
+//Clear all the rows in the table each time when the user selects a new set of files
+function clearAllRows() {
+    const previewTable = document.getElementById("previewTable");
+    while(previewTable.rows.length > 0) {
+        previewTable.deleteRow(0);
     }
+}
 
-    global.addEventListener("load", windowLoadHandler, false);
-}(window));
+classifyImagesButton.onclick = () => {
+    let imgToClassify = document.getElementById("img_0");
+    if(model) {
+        model.classify(imgToClassify).then(predictions => {
+            console.log("Predictions: ");
+            console.log(predictions);
+        });
+    } else {
+        console.log("Model is not loaded yet");
+    }
+}
+
+main();

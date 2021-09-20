@@ -8,14 +8,13 @@
     "build": "cross-env NODE_ENV=production parcel build index.html --public-url ./"
   },
   "keywords": [
-    "\"Object",
-    "Detection\"",
-    "\""
+    "Object Detection",
+    "Image Categorization"
   ],
   "author": "Selvam Subbiah",
   "license": "ISC",
   "dependencies": {
-    "@tensorflow-models/coco-ssd": "^2.2.2",
+    "@tensorflow-models/mobilenet": "^2.1.0",
     "@tensorflow/tfjs": "^3.9.0"
   },
   "devDependencies": {

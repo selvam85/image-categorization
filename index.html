@@ -1,26 +1,38 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Image Categorization using Object Detection in TensorFlow.js</title>
+    <title>Image Filtering using Object Detection in TensorFlow.js</title>
     <!-- Import the webpage's stylesheet -->
     <link rel="stylesheet" href="./style.css">
   </head>  
   <body>
-    <h1>Image Categorization using Object Detection in TensorFlow.js</h1>
+    <h1>Image Filtering using Object Detection in TensorFlow.js</h1>
     
+    <div>
+      <label for="chooseFiles">Add a few images:</label>
+      <input type="file" id="chooseFiles" accept="image/*" multiple="multiple" />
+    </div>
+    
+    <div>
+      <label for="filterCriteria">Filter Criteria: </label>
+      <input type="text" id="filterCriteria"/>
+    </div>
+
+    <p class="note">
+        <b>Note:</b> Enter a list of words (separated by comma) to filter the images. These words will be used as OR condition while matching the object classes identified by the COCO-SSD model. These words need to be one of the <a href="https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/src/classes.ts">80 classes</a> that COCO-SSD model detects. For example - dog, person.
+    </p>
+
+    <button id="filterImages" disabled>Filter Images</button>
+
     <!-- Placeholder to display the selected image -->
     <div id="imagesDiv" class="imageWrapper">
-        <label for="chooseFiles">Add Images</label>
-        <input type="file" id="chooseFiles" accept="image/*" multiple="multiple" />
         <table id="previewTable">
             <thead id="columnHeaders"></thead>
             <tbody id="tableBody"></tbody>
         </table>
     </div>
     
-    <button id="classifyImages" disabled>Classify</button>
-    
     <!-- Import the page's JavaScript to do some stuff -->
-    <script src="./index.js" type="module" defer></script> -->
+    <script src="./index.js" type="module" defer></script>
   </body>
 </html>

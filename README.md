@@ -10,6 +10,8 @@ This app let's the user to
 
 Learn more details about this project in this [blog post](https://handsondeeplearning.com/object-detection-using-tensorflow-js/). 
 
+![Demo](Demo.gif)
+
 ## Run the project 
 This project uses Parcel build tool to bundle the package. Use the below command to run the code, which would open up a browser and display the index.html page.
 

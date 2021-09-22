@@ -1,26 +1,17 @@
 import '@tensorflow/tfjs';
-import * as mobilenet from "@tensorflow-models/mobilenet";
+import * as cocoSsd from "@tensorflow-models/coco-ssd";
 
 const chooseFiles = document.getElementById("chooseFiles");
-const columnHeaders = document.getElementById("columnHeaders");
 const tableBody = document.getElementById("tableBody");
-const classifyImagesButton = document.getElementById("classifyImages");
-const imagesPerRow = 3;
+const filterCriteria = document.getElementById("filterCriteria");
+const filterImages = document.getElementById("filterImages");
+
+const imagesPerRow = 5;
 
 var model;
-mobilenet.load().then(mobileNetModel => {
-    model = mobileNetModel;
+cocoSsd.load().then(cocoSsdModel => {
+  model = cocoSsdModel;
 });
-
-function main() {
-    let header;
-    let row = columnHeaders.insertRow();
-    
-    for(let i = 0; i < imagesPerRow; i++) {
-        header = row.insertCell();
-        header.style.width = (100 / imagesPerRow) + "%";
-    }
-}
 
 chooseFiles.onchange = () => {
     clearAllRows();
@@ -28,9 +19,7 @@ chooseFiles.onchange = () => {
 }
 
 function displayImages() {
-    
     let row;
-
     Array.prototype.forEach.call(chooseFiles.files, function(file, index) {
         let cell;    
         let image;
@@ -43,6 +32,7 @@ function displayImages() {
 
         image = document.createElement("img");
         image.id = "img_" + index;
+        image.className = "imgToFilter";
         image.style.width = "100%";
         image.style.height = "auto";
         cell = row.insertCell(columnIndex);
@@ -51,7 +41,46 @@ function displayImages() {
         image.src = URL.createObjectURL(file);
     });
 
-    classifyImagesButton.disabled = false;
+    filterImages.disabled = false;
+}
+
+filterImages.onclick = async () => {
+    const filterConditionArr = filterCriteria.value.split(",").map(item => item.trim());
+    console.log("Filter Condition: ", filterConditionArr);
+
+    let imgElements = document.getElementsByClassName("imgToFilter");
+
+    if(model) {
+        const promises = Array.prototype.map.call(imgElements, async img => {
+            const predictions = await model.detect(img);
+            return predictions;
+        });
+    
+        const predictionsArr = await Promise.all(promises);
+        console.log("Predictions Array: ", predictionsArr);
+        
+        predictionsArr.forEach(function(predictions, index) {
+            let matched = false;
+            for(let prediction of predictions) {
+                if(filterConditionArr.includes(prediction.class)) {
+                    matched = true;
+                    break;
+                }
+            }
+
+            if(matched) {
+                console.log("img_" + index + " matched");
+                document.getElementById("img_" + index).classList.add("saturate");
+                document.getElementById("img_" + index).classList.remove("dim");
+            } else {
+                console.log("img_" + index + " did not match");
+                document.getElementById("img_" + index).classList.add("dim");
+                document.getElementById("img_" + index).classList.remove("saturate");
+            }
+        });
+    } else {
+        console.log("Model is not loaded yet");
+    }
 }
 
 //Clear all the rows in the table each time when the user selects a new set of files
@@ -61,17 +90,3 @@ function clearAllRows() {
         previewTable.deleteRow(0);
     }
 }
-
-classifyImagesButton.onclick = () => {
-    let imgToClassify = document.getElementById("img_0");
-    if(model) {
-        model.classify(imgToClassify).then(predictions => {
-            console.log("Predictions: ");
-            console.log(predictions);
-        });
-    } else {
-        console.log("Model is not loaded yet");
-    }
-}
-
-main();

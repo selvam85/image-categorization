@@ -1,15 +1,62 @@
+body {
+    font-family: helvetica, arial, sans-serif;
+    margin: 2em;
+}
+
+h1 {
+  color: #FF6F00;
+}
+
+td {
+    width: 20%;
+    height: 20%;
+}
+
+label {
+    font-weight: bold;
+    width: 10%;
+    display: inline-block;
+}
+
+div {
+    margin-top: 10px;
+}
+
+button {
+    margin-top: 10px;
+}
+
 .imageWrapper {
     width: 100%;
     border-style: solid;
     border-width: 1px;
     border-radius: 5px;
 }
-label {
-    display: block;
+
+.note {
+    background-color: grey;
+    border-style: solid;
+    border-color: darkgrey;
+    font-size: 12px;
+    padding: 10px;
+    width: 75%
 }
-input {
-    display: block;
-}
+
 #previewTable {
     width: 100%;
+}
+
+#filterCriteria {
+    width: 15%;
+}
+
+.saturate { 
+    filter: saturate(5); 
+    border-style: groove;
+    border-color: orange;
+    border-width: 0.2em;
+}
+
+.dim { 
+    filter: brightness(0.25); 
 }
